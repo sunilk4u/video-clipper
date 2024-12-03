@@ -1,5 +1,6 @@
 import CrickVideo from "../assets/crick.mp4";
 import { BsFillPlayBtnFill } from "react-icons/bs";
+import { FaPlay } from "react-icons/fa6";
 
 export const VideoPlayer = () => {
   return (
@@ -10,6 +11,17 @@ export const VideoPlayer = () => {
           className="rounded-lg shadow-lg"
           src={CrickVideo}
         ></video>
+
+        <div className="play-controls flex gap-2 mt-5">
+          <FaPlay className="text-white text-xl" />
+          <input
+            className="w-[90%] "
+            type="range"
+            min="0"
+            defaultValue="0"
+            width="100"
+          />
+        </div>
       </div>
       <div className="preview-section w-[50%]">
         <Preview />
