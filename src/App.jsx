@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { Topbar } from "./components/Topbar";
 import Footer from "./components/Footer";
-import { VideoPlayer } from "./components/VideoPlayer";
+import VideoPlayer from "./components/VideoPlayer";
 
 function App() {
   const [isPreview, setIsPreview] = useState(false);

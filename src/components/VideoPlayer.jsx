@@ -1,16 +1,16 @@
 import CrickVideo from "../assets/crick.mp4";
-import { BsFillPlayBtnFill } from "react-icons/bs";
 import { FaPlay, FaPause } from "react-icons/fa6";
 import { HiSpeakerWave } from "react-icons/hi2";
 import Select from "./UI/Select";
 import RangeSlider from "./UI/RangeSlider";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { convertTime } from "../utils/convertTIme";
+import Preview from "./Preview";
 
 const PLAYBACK_SPEED_OPTIONS = ["0.5x", "1x", "1.5x", "2x"];
 const ASPECT_RATIOS = ["9:18", "9:16", "4:3", "3:4", "1:1", "4:5"];
 
-export const VideoPlayer = () => {
+const VideoPlayer = () => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [durationInSec, setDurationInSec] = useState(0);
@@ -20,24 +20,36 @@ export const VideoPlayer = () => {
   const [currentSoundValue, setCurrentSoundValue] = useState(10);
 
   useEffect(() => {
-    if (videoRef.current) {
-      const interval = setInterval(() => {
-        let currentTime = videoRef.current.currentTime;
-        const { hh, mm, ss } = convertTime(currentTime);
-        setCurrentTimeInSec(currentTime);
-        setcurrentTimeInFormat(`${hh}:${mm}:${ss}`);
-      }, 1000);
+    const updateTime = () => {
+      let currentTime = videoRef.current.currentTime;
+      const { hh, mm, ss } = convertTime(currentTime);
+      setCurrentTimeInSec(currentTime);
+      setcurrentTimeInFormat(`${hh}:${mm}:${ss}`);
+    };
 
-      return () => clearInterval(interval);
-    }
-  }, [isPlaying]);
+    const video = videoRef.current;
+    video.addEventListener("timeupdate", updateTime);
+
+    return () => {
+      video.removeEventListener("timeupdate", updateTime);
+    };
+  }, []);
 
   const handleSliderChange = (event) => {
+    setCurrentTimeInSec(Number(event.target.value));
+  };
+
+  const handleSliderChangeMouseUp = (event) => {
+    videoRef.current.pause();
+    setIsPlaying(false);
     videoRef.current.currentTime = event.target.value;
   };
 
   const handleVolume = (event) => {
     setCurrentSoundValue(Number(event.target.value));
+  };
+
+  const handleVolumeChangeMouseUp = (event) => {
     videoRef.current.volume = event.target.value / 10;
   };
 
@@ -79,6 +91,7 @@ export const VideoPlayer = () => {
             max={durationInSec}
             currentValue={currentTimeInSec}
             handleChange={handleSliderChange}
+            handleMouseUp={handleSliderChangeMouseUp}
           />
         </div>
         <div className="flex justify-between my-3">
@@ -93,6 +106,7 @@ export const VideoPlayer = () => {
               max={10}
               currentValue={currentSoundValue}
               handleChange={handleVolume}
+              handleMouseUp={handleVolumeChangeMouseUp}
             />
           </div>
         </div>
@@ -108,17 +122,4 @@ export const VideoPlayer = () => {
   );
 };
 
-const Preview = () => {
-  return (
-    <div className="flex flex-col gap-y-[170px]">
-      <p className="text-gray-400 text-center text-sm">Preview</p>
-      <div className="text-center">
-        <BsFillPlayBtnFill className="text-white text-2xl mx-auto" />
-        <p className="text-white text-sm my-2">Preview not available</p>
-        <p className="text-gray-400 text-xs">
-          Please click on &quot;Start Cropper&quot; <br /> and then play video
-        </p>
-      </div>
-    </div>
-  );
-};
+export default React.memo(VideoPlayer);
