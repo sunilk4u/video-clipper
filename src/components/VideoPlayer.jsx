@@ -17,6 +17,7 @@ export const VideoPlayer = () => {
   const [currentTimeInSec, setCurrentTimeInSec] = useState(0);
   const [durationInFormat, setDurationInFormat] = useState("00:00:00");
   const [currentTimeInFormat, setcurrentTimeInFormat] = useState("00:00:00");
+  const [currentSoundValue, setCurrentSoundValue] = useState(10);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -33,6 +34,11 @@ export const VideoPlayer = () => {
 
   const handleSliderChange = (event) => {
     videoRef.current.currentTime = event.target.value;
+  };
+
+  const handleVolume = (event) => {
+    setCurrentSoundValue(Number(event.target.value));
+    videoRef.current.volume = event.target.value / 10;
   };
 
   const handlePlay = () => {
@@ -83,7 +89,11 @@ export const VideoPlayer = () => {
           </p>
           <div className="flex items-center gap-2 w-[20%]">
             <HiSpeakerWave className="text-white text-2xl" />
-            {/* <RangeSlider /> */}
+            <RangeSlider
+              max={10}
+              currentValue={currentSoundValue}
+              handleChange={handleVolume}
+            />
           </div>
         </div>
         <div className="flex gap-2">
