@@ -21,21 +21,21 @@ const Select = ({
   };
 
   return (
-    <div className="text-white">
+    <div className="text-xs text-white">
       <div
         onClick={handleClick}
-        className="select-button cursor-pointer flex items-center gap-2 text-sm border-2 border-secondary px-4 py-1 rounded-md"
+        className="select-button cursor-pointer flex items-center gap-2 border-2 border-secondary px-4 py-1 rounded-md"
       >
         {label}{" "}
         {showSelected && <span className="text-gray-400">{selected}</span>}{" "}
         <IoIosArrowDown />
       </div>
       {isShow && (
-        <div className="options cursor-pointer p-2 border h-[7rem] overflow-y-scroll border-secondary mt-1 rounded-md shadow-md">
+        <div className="options cursor-pointer py-1 border h-[7rem] overflow-y-scroll border-secondary mt-1 rounded-md shadow-md">
           {options.map((option, i) => (
             <p
               onClick={() => handleOptionCLick(i)}
-              className="px-3 py-1 hover:bg-secondary rounded-md"
+              className="px-3 py-1 hover:bg-secondary"
               key={i}
             >
               {option}
