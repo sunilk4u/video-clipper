@@ -21,6 +21,13 @@ body,
   height: 100vh;
 }
 
+.cropper {
+  position: absolute;
+  border: 2px solid #fff;
+  background-color: rgba(0255, 255, 255, 0.3);
+  cursor: move;
+}
+
 .slider {
   -webkit-appearance: none;
   appearance: none;

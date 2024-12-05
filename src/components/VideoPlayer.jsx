@@ -12,12 +12,17 @@ const ASPECT_RATIOS = ["9:18", "9:16", "4:3", "3:4", "1:1", "4:5"];
 
 const VideoPlayer = () => {
   const videoRef = useRef(null);
+  const cropperRef = useRef(null);
+  const startX = useRef(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [durationInSec, setDurationInSec] = useState(0);
   const [currentTimeInSec, setCurrentTimeInSec] = useState(0);
   const [currentSoundValue, setCurrentSoundValue] = useState(10);
   const [playBackSpeed, setPlayBackSpeed] = useState("1x");
-  const [aspectRatio, setAspectRatio] = useState("9:18");
+  const [cropper, setCropper] = useState({
+    left: 0,
+    width: 0,
+  });
 
   useEffect(() => {
     const updateTime = () => {
@@ -28,6 +33,8 @@ const VideoPlayer = () => {
     const video = videoRef.current;
     video.addEventListener("timeupdate", updateTime);
 
+    handleAspectRatio(ASPECT_RATIOS[0]);
+
     return () => {
       video.removeEventListener("timeupdate", updateTime);
     };
@@ -37,6 +44,35 @@ const VideoPlayer = () => {
     (timeInSec) => convertTime(timeInSec),
     []
   );
+
+  const handleDrag = (event) => {
+    const { clientX } = event;
+    const videoRect = videoRef.current.getBoundingClientRect();
+    const cropperRect = cropperRef.current.getBoundingClientRect();
+    const newPos = clientX - startX.current;
+    setCropper((prev) => ({
+      ...prev,
+      left: Math.max(0, Math.min(newPos, videoRect.width - cropperRect.width)),
+    }));
+  };
+
+  const startDrag = (e) => {
+    e.preventDefault();
+
+    const onMouseMove = (event) => handleDrag(event);
+    const onMouseDown = (event) => {
+      startX.current = event.clientX - cropper.left;
+    };
+    const onMouseUp = () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("mousedown", onMouseDown);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("mousedown", onMouseDown);
+  };
 
   const handleSliderChange = (event) => {
     setCurrentTimeInSec(Number(event.target.value));
@@ -61,7 +97,16 @@ const VideoPlayer = () => {
     videoRef.current.playbackRate = Number(option.replace("x", ""));
   };
 
-  const handleAspectRatio = (option) => {};
+  const handleAspectRatio = (option) => {
+    const ratio = Number(option.split(":")[0]) / Number(option.split(":")[1]);
+    const videoRect = videoRef.current.getBoundingClientRect();
+    const newWidth = Math.floor(ratio * videoRect.height);
+    setCropper((prev) => ({
+      ...prev,
+      width: newWidth,
+      left: Math.min(prev.left, videoRect.width - newWidth),
+    }));
+  };
 
   const handlePlay = () => {
     if (isPlaying) {
@@ -81,13 +126,34 @@ const VideoPlayer = () => {
   return (
     <div className="flex">
       <div className="video-section w-[50%]">
-        <video
-          width="100%"
-          className="rounded-lg shadow-lg"
-          ref={videoRef}
-          src={CrickVideo}
-          onLoadedMetadata={handleLoadedVideoMetadata}
-        ></video>
+        <div className="relative">
+          {/* video layer */}
+          <video
+            width="100%"
+            className="rounded-lg shadow-lg"
+            ref={videoRef}
+            src={CrickVideo}
+            onLoadedMetadata={handleLoadedVideoMetadata}
+          ></video>
+
+          {/* cropper overlay */}
+          <div
+            className="cropper grid grid-rows-3 grid-cols-3"
+            onMouseDown={startDrag}
+            ref={cropperRef}
+            style={{
+              top: "0",
+              bottom: "0",
+              left: cropper.left,
+              width: cropper.width,
+              height: "100%",
+            }}
+          >
+            {Array.from(new Array(9)).map((_, i) => (
+              <span className="border border-white" key={i}></span>
+            ))}
+          </div>
+        </div>
 
         <div className="play-controls flex items-center gap-2 mt-5 relative">
           {isPlaying ? (
