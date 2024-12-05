@@ -3,7 +3,7 @@ import { FaPlay, FaPause } from "react-icons/fa6";
 import { HiSpeakerWave } from "react-icons/hi2";
 import Select from "./UI/Select";
 import RangeSlider from "./UI/RangeSlider";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { convertTime } from "../utils/convertTIme";
 import Preview from "./Preview";
 
@@ -15,16 +15,14 @@ const VideoPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [durationInSec, setDurationInSec] = useState(0);
   const [currentTimeInSec, setCurrentTimeInSec] = useState(0);
-  const [durationInFormat, setDurationInFormat] = useState("00:00:00");
-  const [currentTimeInFormat, setcurrentTimeInFormat] = useState("00:00:00");
   const [currentSoundValue, setCurrentSoundValue] = useState(10);
+  const [playBackSpeed, setPlayBackSpeed] = useState("1x");
+  const [aspectRatio, setAspectRatio] = useState("9:18");
 
   useEffect(() => {
     const updateTime = () => {
       let currentTime = videoRef.current.currentTime;
-      const { hh, mm, ss } = convertTime(currentTime);
       setCurrentTimeInSec(currentTime);
-      setcurrentTimeInFormat(`${hh}:${mm}:${ss}`);
     };
 
     const video = videoRef.current;
@@ -34,6 +32,11 @@ const VideoPlayer = () => {
       video.removeEventListener("timeupdate", updateTime);
     };
   }, []);
+
+  const convertVideoTme = useCallback(
+    (timeInSec) => convertTime(timeInSec),
+    []
+  );
 
   const handleSliderChange = (event) => {
     setCurrentTimeInSec(Number(event.target.value));
@@ -53,6 +56,13 @@ const VideoPlayer = () => {
     videoRef.current.volume = event.target.value / 10;
   };
 
+  const handlePlaybackSpeed = (option) => {
+    setPlayBackSpeed(option);
+    videoRef.current.playbackRate = Number(option.replace("x", ""));
+  };
+
+  const handleAspectRatio = (option) => {};
+
   const handlePlay = () => {
     if (isPlaying) {
       videoRef.current.pause();
@@ -65,9 +75,7 @@ const VideoPlayer = () => {
 
   const handleLoadedVideoMetadata = () => {
     let duration = videoRef.current.duration;
-    let { hh, mm, ss } = convertTime(duration);
     setDurationInSec(duration);
-    setDurationInFormat(`${hh}:${mm}:${ss}`);
   };
 
   return (
@@ -96,9 +104,13 @@ const VideoPlayer = () => {
         </div>
         <div className="flex justify-between my-3">
           <p className="flex items-center gap-2 text-xs">
-            <span className="text-white">{currentTimeInFormat}</span>
+            <span className="text-white">
+              {convertVideoTme(currentTimeInSec)}
+            </span>
             <span className="text-gray-400">&#124;</span>
-            <span className="text-gray-500">{durationInFormat}</span>
+            <span className="text-gray-500">
+              {convertVideoTme(durationInSec)}
+            </span>
           </p>
           <div className="flex items-center gap-2 w-[20%]">
             <HiSpeakerWave className="text-white text-2xl" />
@@ -111,8 +123,18 @@ const VideoPlayer = () => {
           </div>
         </div>
         <div className="flex gap-2">
-          <Select label="Playback Speed" options={PLAYBACK_SPEED_OPTIONS} />
-          <Select label="Cropper Aspect Ratio" options={ASPECT_RATIOS} />
+          <Select
+            label="Playback Speed"
+            defaultValue="1x"
+            options={PLAYBACK_SPEED_OPTIONS}
+            handleSelected={handlePlaybackSpeed}
+          />
+          <Select
+            label="Cropper Aspect Ratio"
+            defaultValue="9:18"
+            options={ASPECT_RATIOS}
+            handleSelected={handleAspectRatio}
+          />
         </div>
       </div>
       <div className="preview-section w-[50%]">

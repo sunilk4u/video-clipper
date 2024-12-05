@@ -7,9 +7,5 @@ export function convertTime(timeInSec) {
   if (mm < 10) mm = "0" + mm;
   if (ss < 10) ss = "0" + ss;
 
-  return {
-    hh: `${hh}`,
-    mm: `${mm}`,
-    ss: `${ss}`,
-  };
+  return `${hh}:${mm}:${ss}`;
 }

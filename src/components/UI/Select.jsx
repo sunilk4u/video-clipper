@@ -2,14 +2,21 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
-const Select = ({ label, options = [], showSelected = true }) => {
+const Select = ({
+  label,
+  options = [],
+  showSelected = true,
+  defaultValue,
+  handleSelected,
+}) => {
   const [isShow, setIsShow] = useState(false);
-  const [selected, setSelected] = useState(options[0]);
+  const [selected, setSelected] = useState(defaultValue || options[0]);
 
   const handleClick = () => setIsShow((prev) => !prev);
 
   const handleOptionCLick = (index) => {
     setSelected(options[index]);
+    handleSelected(options[index]);
     setIsShow(false);
   };
 
@@ -42,8 +49,10 @@ const Select = ({ label, options = [], showSelected = true }) => {
 
 Select.propTypes = {
   label: PropTypes.string,
+  defaultValue: PropTypes.string,
   options: PropTypes.array,
   showSelected: PropTypes.bool,
+  handleSelected: PropTypes.func,
 };
 
 export default Select;
