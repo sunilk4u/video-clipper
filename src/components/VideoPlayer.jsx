@@ -77,6 +77,7 @@ const VideoPlayer = ({ isCropperActive }) => {
         height: cropper.height,
       });
       previewRef.current.currentTime = currentTimeInSec;
+      previewRef.current.playbackRate = Number(playBackSpeed.replace("x", ""));
       previewRef.current.play();
     } else {
       previewRef.current.pause();
@@ -145,6 +146,7 @@ const VideoPlayer = ({ isCropperActive }) => {
 
   // sets playback speed
   const handlePlaybackSpeed = (option) => {
+    pause();
     setPlayBackSpeed(option);
     videoRef.current.playbackRate = Number(option.replace("x", ""));
   };
@@ -318,6 +320,7 @@ const VideoPlayer = ({ isCropperActive }) => {
                   className="absolute"
                   ref={previewRef}
                   src={CrickVideo}
+                  muted
                   style={{
                     top: 0,
                     height: videoDimensions.current.height,
