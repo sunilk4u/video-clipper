@@ -194,6 +194,10 @@ const VideoPlayer = ({ isCropperActive }) => {
     setDurationInSec(duration);
   };
 
+  // const pLeft =() => {
+  //   if(cordinates.left )
+  // }
+
   return (
     <div className="flex gap-[5%]">
       <div className="video-section w-[45%]">
@@ -296,7 +300,13 @@ const VideoPlayer = ({ isCropperActive }) => {
             </div>
           )}
           {isCropperActive && (
-            <div className="preview-main flex justify-center w-full">
+            <div
+              className="preview-main flex justify-center mx-auto"
+              style={{
+                width: videoDimensions.current.width,
+                height: videoDimensions.current.height,
+              }}
+            >
               <div
                 className="relative overflow-hidden mx-auto"
                 style={{
@@ -313,9 +323,7 @@ const VideoPlayer = ({ isCropperActive }) => {
                     height: videoDimensions.current.height,
                     width: videoDimensions.current.width,
                     objectFit: "cover",
-                    objectPosition: `${
-                      (cordinates.left / 100) * videoDimensions.current.width
-                    }% -0%`,
+                    objectPosition: `-${cordinates.left}px 0px`,
                   }}
                 ></video>
               </div>
