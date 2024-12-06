@@ -5,7 +5,7 @@ import { TimelineContext } from "../context/timelineContext";
 import { downloadFile } from "../utils/download";
 
 const Footer = ({ isCropperActive, handleCropper }) => {
-  const { timelineData } = useContext(TimelineContext);
+  const { timelineData, setTimelineData } = useContext(TimelineContext);
 
   return (
     <div className="flex justify-between">
@@ -20,7 +20,10 @@ const Footer = ({ isCropperActive, handleCropper }) => {
           colorClasses="bg-accent disabled:bg-accentDark"
           label="Remove Cropper"
           disabled={!isCropperActive}
-          onClick={() => handleCropper(false)}
+          onClick={() => {
+            handleCropper(false);
+            setTimelineData([]);
+          }}
         />
         <Button
           colorClasses="bg-accent disabled:bg-accentDark"
